@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Debugger.Core/Debugger.Core.csproj" />
+  <Project Path="Debugger/Debugger.Application.csproj" />
+  
+</Solution>
