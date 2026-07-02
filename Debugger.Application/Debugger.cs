@@ -10,7 +10,7 @@ namespace Debugger;
 public class Debugger : Game
 {
     private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
+    public SpriteBatch SpriteBatch {get; private set;}
 
     public ScreenManager ScreenManager;
 
@@ -24,6 +24,7 @@ public class Debugger : Game
 
     protected override void Initialize()
     {
+        SpriteBatch = new SpriteBatch(GraphicsDevice);
         ScreenManager.ChangeScreen(new GameScreen(this));
 
         base.Initialize();
@@ -31,7 +32,6 @@ public class Debugger : Game
 
     protected override void LoadContent()
     {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
         AssetManager.LoadAll(Content);
 
         ScreenManager.ActiveScreen.LoadContent();
@@ -51,11 +51,11 @@ public class Debugger : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin();
+        SpriteBatch.Begin();
 
-        ScreenManager.ActiveScreen.Draw(_spriteBatch);
+        ScreenManager.ActiveScreen.Draw(SpriteBatch);
 
-        _spriteBatch.End();
+        SpriteBatch.End();
 
         base.Draw(gameTime);
     }
