@@ -18,11 +18,13 @@ namespace Debugger.Core.Entities
             Position = startPosition;
         }
 
-        virtual public void Move(Vector2 offset, float dt)
+        virtual public void Move(Vector2 direction, float dt)
         {
-            offset = Vector2.Normalize(offset);
+            if (direction == Vector2.Zero) return;
 
-            Position += offset * Speed * dt;
+            direction = Vector2.Normalize(direction);
+
+            Position += direction * Speed * dt;
         }
 
         virtual public void Update(float dt)
