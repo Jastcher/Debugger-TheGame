@@ -2,7 +2,10 @@ using System;
 using System.Collections.Generic;
 using Debugger.Application.Systems;
 using Debugger.Core.Entities;
+using Debugger.Core.Systems;
 using Debugger.Systems;
+using LDtk;
+using LDtk.Renderer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -11,29 +14,49 @@ namespace Debugger.Screens
 {
     public class GameScreen : Screen
     {
-        EntityRenderer renderer = new();
-        List<Entity> entities = new();
+        EntityRenderer _renderer = new();
 
-        private Player player;
+        GameplaySimulation _simulation = new();
+
+        LDtkWorld world;
+        ExampleRenderer tilerenderer;
         public GameScreen(Debugger game) : base(game)
         {
         }
 
         public override void Initialize()
         {
-            player = new(new CoreVector2(50, 50));
-            entities.Add(player);
+            LDtkFile file = LDtkFile.FromFile("Content/world.ldtk");
+            world = file.LoadWorld(file.Worlds[0].Iid);
+            foreach (LDtkLevel room in world.Levels)
+            {
+                Console.WriteLine($"Found room named: {room.Identifier} at grid position X:{room.WorldX} Y:{room.WorldY}");
+
+            }
+
+            tilerenderer = new ExampleRenderer(Game.SpriteBatch);
+
         }
 
         public override void LoadContent()
         {
 
-        }
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            renderer.Draw(spriteBatch, entities);
+            foreach (LDtkLevel level in world.Levels)
+            {
+                tilerenderer.PrerenderLevel(level);
+            }
         }
 
+        public override void Draw(SpriteBatch spriteBatch)
+        {
+            foreach (LDtkLevel level in world.Levels)
+            {
+                tilerenderer.RenderPrerenderedLevel(level);
+            }
+
+            _renderer.Draw(spriteBatch, _simulation.Entities);
+
+        }
 
         public override void Update(GameTime gameTime)
         {
@@ -44,8 +67,7 @@ namespace Debugger.Screens
 
             CoreVector2 movementInput = ProcessMovementInput();
 
-            if (movementInput != Vector2.Zero)
-                player.Move(movementInput, (float)gameTime.ElapsedGameTime.TotalSeconds);
+            _simulation.Update(movementInput, (float)gameTime.ElapsedGameTime.TotalSeconds);
 
         }
 
