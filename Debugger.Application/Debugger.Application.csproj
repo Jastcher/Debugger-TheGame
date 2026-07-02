@@ -23,10 +23,17 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="LDtkMonogame" Version="1.8.1" />
     <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.*" />
     <PackageReference Include="MonoGame.Content.Builder.Task" Version="3.8.*" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Debugger.Core\Debugger.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Content/world.ldtk">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 </Project>
