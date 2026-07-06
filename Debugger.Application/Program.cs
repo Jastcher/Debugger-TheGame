@@ -1,2 +1,8 @@
-﻿using var game = new Debugger.Debugger();
-game.Run();
+﻿internal class Program
+{
+    private static void Main(string[] args)
+    {
+        using var game = new Debugger.Application.Debugger();
+        game.Run();
+    }
+}
