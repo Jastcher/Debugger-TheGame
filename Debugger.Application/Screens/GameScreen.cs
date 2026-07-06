@@ -1,20 +1,20 @@
 using System;
-using System.Collections.Generic;
+using Debugger.Application.Components;
 using Debugger.Application.Systems;
-using Debugger.Core.Entities;
 using Debugger.Core.Systems;
-using Debugger.Systems;
 using LDtk;
 using LDtk.Renderer;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Debugger.Screens
+namespace Debugger.Application.Screens
 {
     public class GameScreen : Screen
     {
         EntityRenderer _renderer = new();
+        
+        Camera _camera = new();
 
         GameplaySimulation _simulation = new();
 
@@ -26,6 +26,7 @@ namespace Debugger.Screens
 
         public override void Initialize()
         {
+            // TODO: fix relative path
             LDtkFile file = LDtkFile.FromFile("Content/world.ldtk");
             world = file.LoadWorld(file.Worlds[0].Iid);
             foreach (LDtkLevel room in world.Levels)
@@ -34,7 +35,7 @@ namespace Debugger.Screens
 
             }
 
-            tilerenderer = new ExampleRenderer(Game.SpriteBatch);
+            tilerenderer = new ExampleRenderer(_spriteBatch);
 
         }
 
@@ -47,19 +48,26 @@ namespace Debugger.Screens
             }
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
+            _spriteBatch.Begin(
+            samplerState: SamplerState.PointClamp,
+            transformMatrix: _camera.GetTransformationMatrix(Game.GraphicsDevice)
+        );
             foreach (LDtkLevel level in world.Levels)
             {
                 tilerenderer.RenderPrerenderedLevel(level);
             }
 
-            _renderer.Draw(spriteBatch, _simulation.Entities);
+            _renderer.Draw(_spriteBatch, _simulation.Entities);
+
+            _spriteBatch.End();
 
         }
 
         public override void Update(GameTime gameTime)
         {
+            float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (InputSystem.IsPressedOnce(Keys.Escape))
             {
                 Game.ScreenManager.PushScreen(new MenuScreen(Game));
@@ -67,7 +75,12 @@ namespace Debugger.Screens
 
             CoreVector2 movementInput = ProcessMovementInput();
 
-            _simulation.Update(movementInput, (float)gameTime.ElapsedGameTime.TotalSeconds);
+            _simulation.Update(movementInput, dt);
+            
+            _camera.Follow(_simulation.Player.Position, 2.0f, dt);
+            
+            //Console.WriteLine($"player pos: {_simulation.Player.Position}");
+            Console.WriteLine($"camera pos: {_camera.Position}");
 
         }
 
