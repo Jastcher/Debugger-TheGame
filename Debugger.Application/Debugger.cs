@@ -1,62 +1,60 @@
-﻿using Debugger.Screens;
-using Debugger.Systems;
+﻿using Debugger.Application.Screens;
+using Debugger.Application.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Debugger;
-
-public class Debugger : Game
+namespace Debugger.Application
 {
-    private GraphicsDeviceManager _graphics;
-    public SpriteBatch SpriteBatch {get; private set;}
 
-    public ScreenManager ScreenManager;
-
-    public Debugger()
+    public class Debugger : Game
     {
-        _graphics = new GraphicsDeviceManager(this);
-        ScreenManager = new ScreenManager();
-        Content.RootDirectory = "Content";
-        IsMouseVisible = true;
+        private GraphicsDeviceManager _graphics;
+        public ScreenManager ScreenManager;
+
+        public Debugger()
+        {
+            _graphics = new GraphicsDeviceManager(this);
+            ScreenManager = new ScreenManager();
+            Content.RootDirectory = "Content";
+            IsMouseVisible = true;
+        }
+
+        protected override void Initialize()
+        {
+            ScreenManager.ChangeScreen(new GameScreen(this));
+
+            base.Initialize();
+        }
+
+        protected override void LoadContent()
+        {
+            AssetManager.LoadAll(Content);
+
+            ScreenManager.ActiveScreen.LoadContent();
+        }
+
+        protected override void Update(GameTime gameTime)
+        {
+
+            InputSystem.Update();
+
+            ScreenManager.ActiveScreen.Update(gameTime);
+
+            base.Update(gameTime);
+        }
+
+        protected override void Draw(GameTime gameTime)
+        {
+            GraphicsDevice.Clear(Color.CornflowerBlue);
+
+
+            ScreenManager.ActiveScreen.Draw();
+
+
+            base.Draw(gameTime);
+        }
     }
 
-    protected override void Initialize()
-    {
-        SpriteBatch = new SpriteBatch(GraphicsDevice);
-        ScreenManager.ChangeScreen(new GameScreen(this));
-
-        base.Initialize();
-    }
-
-    protected override void LoadContent()
-    {
-        AssetManager.LoadAll(Content);
-
-        ScreenManager.ActiveScreen.LoadContent();
-    }
-
-    protected override void Update(GameTime gameTime)
-    {
-
-        InputSystem.Update();
-
-        ScreenManager.ActiveScreen.Update(gameTime);
-
-        base.Update(gameTime);
-    }
-
-    protected override void Draw(GameTime gameTime)
-    {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        SpriteBatch.Begin();
-
-        ScreenManager.ActiveScreen.Draw(SpriteBatch);
-
-        SpriteBatch.End();
-
-        base.Draw(gameTime);
-    }
 }
