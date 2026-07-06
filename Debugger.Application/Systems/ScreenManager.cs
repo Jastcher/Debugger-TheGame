@@ -1,8 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
-using Debugger.Screens;
+using Debugger.Application.Screens;
 
-namespace Debugger.Systems
+namespace Debugger.Application.Systems
 {
     public class ScreenManager
     {

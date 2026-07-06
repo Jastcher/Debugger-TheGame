@@ -1,6 +1,6 @@
 using Microsoft.Xna.Framework.Input;
 
-namespace Debugger.Systems
+namespace Debugger.Application.Systems
 {
     public static class InputSystem
     {
