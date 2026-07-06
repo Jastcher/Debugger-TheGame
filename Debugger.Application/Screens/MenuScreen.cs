@@ -1,9 +1,9 @@
-using Debugger.Systems;
+using Debugger.Application.Systems;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
-namespace Debugger.Screens
+namespace Debugger.Application.Screens
 {
     public class MenuScreen : Screen
     {
@@ -11,9 +11,11 @@ namespace Debugger.Screens
         {
         }
 
-        public override void Draw(SpriteBatch spriteBatch)
+        public override void Draw()
         {
+            _spriteBatch.Begin();
             Game.GraphicsDevice.Clear(Color.Purple);
+            _spriteBatch.End();
         }
 
         public override void Initialize()
