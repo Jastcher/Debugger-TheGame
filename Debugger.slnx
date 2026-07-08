@@ -1,5 +1,5 @@
 <Solution>
   <Project Path="Debugger.Core/Debugger.Core.csproj" />
-  <Project Path="Debugger/Debugger.Application.csproj" />
+  <Project Path="Debugger.Application/Debugger.Application.csproj" />
   
 </Solution>
