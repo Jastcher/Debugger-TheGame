@@ -1,4 +1,5 @@
 using System;
+using System.Security.Cryptography;
 using Debugger.Application.Components;
 using Debugger.Application.Systems;
 using Debugger.Core.Systems;
@@ -13,13 +14,15 @@ namespace Debugger.Application.Screens
     public class GameScreen : Screen
     {
         EntityRenderer _renderer = new();
-        
+        ExampleRenderer _tileRenderer;
+
         Camera _camera = new();
 
         GameplaySimulation _simulation = new();
 
+        RoomManager _roomManager = new();
+
         LDtkWorld world;
-        ExampleRenderer tilerenderer;
         public GameScreen(Debugger game) : base(game)
         {
         }
@@ -35,31 +38,42 @@ namespace Debugger.Application.Screens
 
             }
 
-            tilerenderer = new ExampleRenderer(_spriteBatch);
+            _tileRenderer = new ExampleRenderer(_spriteBatch);
 
+            _roomManager.GenLayout(2);
         }
 
         public override void LoadContent()
         {
-
             foreach (LDtkLevel level in world.Levels)
             {
-                tilerenderer.PrerenderLevel(level);
+                _tileRenderer.PrerenderLevel(level);
             }
         }
 
         public override void Draw()
         {
             _spriteBatch.Begin(
-            samplerState: SamplerState.PointClamp,
-            transformMatrix: _camera.GetTransformationMatrix(Game.GraphicsDevice)
-        );
-            foreach (LDtkLevel level in world.Levels)
-            {
-                tilerenderer.RenderPrerenderedLevel(level);
-            }
+                samplerState: SamplerState.PointClamp,
+                transformMatrix: _camera.GetTransformationMatrix(Game.GraphicsDevice)
+            );
+
+            //foreach (LDtkLevel level in world.Levels)
+            //{
+            //    tilerenderer.RenderPrerenderedLevel(level);
+            //}
+            //
+
+            _tileRenderer.RenderPrerenderedLevel(world.Levels[_roomManager.CurrentRoom.RoomIndex]);
 
             _renderer.Draw(_spriteBatch, _simulation.Entities);
+
+            _spriteBatch.DrawString(
+                AssetManager.Font,
+                $"{_roomManager.CurrentPosX} {_roomManager.CurrentPosY}",
+                new Vector2(20, 20),
+                Color.White
+            );
 
             _spriteBatch.End();
 
@@ -73,14 +87,22 @@ namespace Debugger.Application.Screens
                 Game.ScreenManager.PushScreen(new MenuScreen(Game));
             }
 
+            // DEBUG
+            if (InputSystem.IsPressedOnce(Keys.Up)) _roomManager.Move(0, -1);
+            else if (InputSystem.IsPressedOnce(Keys.Down)) _roomManager.Move(0, 1);
+            if (InputSystem.IsPressedOnce(Keys.Left)) _roomManager.Move(-1, 0);
+            else if (InputSystem.IsPressedOnce(Keys.Right)) _roomManager.Move(1, 0);
+            if (InputSystem.IsPressedOnce(Keys.RightShift)) _roomManager.PrintMap();
+
+
             CoreVector2 movementInput = ProcessMovementInput();
 
             _simulation.Update(movementInput, dt);
-            
-            _camera.Follow(_simulation.Player.Position, 2.0f, dt);
-            
+
+            _camera.Follow(_simulation.Player.Position, 1.0f, dt);
+
             //Console.WriteLine($"player pos: {_simulation.Player.Position}");
-            Console.WriteLine($"camera pos: {_camera.Position}");
+            //Console.WriteLine($"camera pos: {_camera.Position}");
 
         }
 
@@ -93,6 +115,7 @@ namespace Debugger.Application.Screens
             else if (state.IsKeyDown(Keys.S)) direction.Y += 1f;
             if (state.IsKeyDown(Keys.A)) direction.X -= 1f;
             else if (state.IsKeyDown(Keys.D)) direction.X += 1f;
+
 
             return direction;
         }
