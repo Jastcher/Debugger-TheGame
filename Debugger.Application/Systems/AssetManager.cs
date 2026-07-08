@@ -9,10 +9,14 @@ namespace Debugger.Application.Systems
     public static class AssetManager
     {
         private static readonly Dictionary<string, Texture2D> _textures = new();
+        
+        public static SpriteFont Font {get;private set;}
 
         public static void LoadAll(ContentManager content)
         {
             _textures["player"] = content.Load<Texture2D>("Sprites/arrow");
+            
+            Font = content.Load<SpriteFont>("Font");
         }
 
         public static Texture2D Get(string key)
