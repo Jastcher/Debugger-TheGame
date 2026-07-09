@@ -1,7 +1,7 @@
 using System;
-using System.Security.Cryptography;
 using Debugger.Application.Components;
 using Debugger.Application.Systems;
+using Debugger.Application.UI;
 using Debugger.Core.Systems;
 using LDtk;
 using LDtk.Renderer;
@@ -21,6 +21,8 @@ namespace Debugger.Application.Screens
         GameplaySimulation _simulation = new();
 
         RoomManager _roomManager = new();
+        
+        HudUI _hud;
 
         LDtkWorld world;
         public GameScreen(Debugger game) : base(game)
@@ -35,12 +37,13 @@ namespace Debugger.Application.Screens
             foreach (LDtkLevel room in world.Levels)
             {
                 Console.WriteLine($"Found room named: {room.Identifier} at grid position X:{room.WorldX} Y:{room.WorldY}");
-
             }
 
             _tileRenderer = new ExampleRenderer(_spriteBatch);
 
-            _roomManager.GenLayout(2);
+            _roomManager.GenLayout(5);
+            
+            _hud = new(Game, AssetManager.DefaultUiStyle, _roomManager);
         }
 
         public override void LoadContent()
@@ -51,32 +54,29 @@ namespace Debugger.Application.Screens
             }
         }
 
-        public override void Draw()
+        public override void Draw(GameTime gameTime)
         {
             _spriteBatch.Begin(
                 samplerState: SamplerState.PointClamp,
                 transformMatrix: _camera.GetTransformationMatrix(Game.GraphicsDevice)
             );
 
-            //foreach (LDtkLevel level in world.Levels)
-            //{
-            //    tilerenderer.RenderPrerenderedLevel(level);
-            //}
-            //
-
             _tileRenderer.RenderPrerenderedLevel(world.Levels[_roomManager.CurrentRoom.RoomIndex]);
 
             _renderer.Draw(_spriteBatch, _simulation.Entities);
 
+            // DEBUG
             _spriteBatch.DrawString(
                 AssetManager.Font,
                 $"{_roomManager.CurrentPosX} {_roomManager.CurrentPosY}",
                 new Vector2(20, 20),
                 Color.White
             );
+            
 
             _spriteBatch.End();
 
+            _hud.Draw(_spriteBatch, gameTime);
         }
 
         public override void Update(GameTime gameTime)
@@ -84,7 +84,7 @@ namespace Debugger.Application.Screens
             float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (InputSystem.IsPressedOnce(Keys.Escape))
             {
-                Game.ScreenManager.PushScreen(new MenuScreen(Game));
+                Game.ScreenManager.PushScreen(new PauseScreen(Game));
             }
 
             // DEBUG
@@ -103,6 +103,8 @@ namespace Debugger.Application.Screens
 
             //Console.WriteLine($"player pos: {_simulation.Player.Position}");
             //Console.WriteLine($"camera pos: {_camera.Position}");
+            
+            _hud.Update(gameTime);
 
         }
 
