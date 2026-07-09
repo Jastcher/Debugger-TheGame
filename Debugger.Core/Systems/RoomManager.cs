@@ -1,4 +1,5 @@
 
+using System.Drawing;
 using System.Dynamic;
 using Debugger.Core.Entities;
 
@@ -7,14 +8,29 @@ namespace Debugger.Core.Systems
     public class RoomManager
     {
 
-        public int CurrentPosX { get; set; } = 4;
-        public int CurrentPosY { get; set; } = 4;
+        // size has to be odd
+        public int Size { get; private set; } = 9;
+
+        public int CurrentPosX { get; private set; }
+        public int CurrentPosY { get; private set; }
+        
+        public int CenterX {get;private set;}
+        public int CenterY {get;private set;}
 
         public Room CurrentRoom { get => roomMap[CurrentPosX, CurrentPosY]; }
 
         public Room GetRoom(int x, int y) => roomMap[x, y];
 
         Room[,] roomMap = new Room[9, 9];
+
+        public RoomManager()
+        {
+            CenterX = (Size - 1) / 2;
+            CenterY = (Size - 1) / 2;
+            
+            CurrentPosX = CenterX;
+            CurrentPosY = CenterY;
+        }
 
         public void PlaceRoom(Room room)
         {
@@ -26,11 +42,11 @@ namespace Debugger.Core.Systems
 
             int newPosX = CurrentPosX + relX;
             int newPosY = CurrentPosY + relY;
-            
+
             if (newPosX < 0 || newPosX > roomMap.GetLength(0)) return;
             if (newPosY < 0 || newPosY > roomMap.GetLength(1)) return;
 
-            if (roomMap[newPosX,  newPosY] == null) return;
+            if (roomMap[newPosX, newPosY] == null) return;
 
             CurrentPosX = newPosX;
             CurrentPosY = newPosY;
@@ -64,7 +80,7 @@ namespace Debugger.Core.Systems
             List<Room> rooms = new();
 
             // place starting room at center
-            Room start = new Room(IDCounter++, 1, 4, 4);
+            Room start = new Room(IDCounter++, 1, CenterX, CenterY);
             rooms.Add(start);
 
             // randomly distribute nodes
@@ -86,7 +102,7 @@ namespace Debugger.Core.Systems
             for (int i = 0; i < rooms.Count; i++)
             {
                 Room crntRoom = rooms[i];
-                var nearestNeighbors = rooms.Where(r => r.ID != crntRoom.ID).Select(r => new{Room = r, Distance = Math.Pow(r.X - crntRoom.X, 2) + Math.Pow(r.Y - crntRoom.Y, 2)}).OrderBy(r => r.Distance).Take(n);
+                var nearestNeighbors = rooms.Where(r => r.ID != crntRoom.ID).Select(r => new { Room = r, Distance = Math.Pow(r.X - crntRoom.X, 2) + Math.Pow(r.Y - crntRoom.Y, 2) }).OrderBy(r => r.Distance).Take(n);
 
                 //Console.WriteLine(crntRoom.ID);
                 foreach (var neighbor in nearestNeighbors)
@@ -95,35 +111,35 @@ namespace Debugger.Core.Systems
                     potentialEdges.Add([crntRoom.ID, neighbor.Room.ID, (int)neighbor.Distance]);
                 }
             }
-            
+
             List<int[]> dungeonPassages = KruskalSolver.KruskalsMST(rooms.Count, potentialEdges);
 
             // add rooms in between nodes
             foreach (var pass in dungeonPassages)
             {
                 //Console.WriteLine($"{pass[0]} {pass[1]} {pass[2]}");
-                
+
                 Room r1 = rooms[pass[0]];
                 Room r2 = rooms[pass[1]];
-                
+
                 int minX = Math.Min(r1.X, r2.X);
                 int maxX = Math.Max(r1.X, r2.X);
-                
+
                 for (int i = minX; i <= maxX; i++)
                 {
                     if (rooms.Any(r => r.X == i && r.Y == r1.Y)) continue;
-                    
+
                     Room room = new(IDCounter++, Random.Shared.Next(2), i, r1.Y);
                     rooms.Add(room);
                 }
 
                 int minY = Math.Min(r1.Y, r2.Y);
                 int maxY = Math.Max(r1.Y, r2.Y);
-                
+
                 for (int i = minY; i <= maxY; i++)
                 {
                     if (rooms.Any(r => r.X == r2.X && r.Y == i)) continue;
-                    
+
                     Room room = new(IDCounter++, Random.Shared.Next(2), r2.X, i);
                     rooms.Add(room);
                 }
