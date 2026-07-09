@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Debugger.Application.Screens;
+using Microsoft.Xna.Framework;
 
 namespace Debugger.Application.Systems
 {
@@ -34,6 +36,19 @@ namespace Debugger.Application.Systems
             }
             
             PushScreen(screen);
+        }
+        
+        public void DrawActive(GameTime gameTime)
+        {
+            ActiveScreen.Draw(gameTime);
+        }
+        
+        public void DrawAll(GameTime gameTime)
+        {
+            foreach (var screen in _screenStack.AsEnumerable().Reverse())
+            {
+                screen.Draw(gameTime);
+            }
         }
     }
 }
