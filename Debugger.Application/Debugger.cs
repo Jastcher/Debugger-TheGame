@@ -16,23 +16,22 @@ namespace Debugger.Application
         public Debugger()
         {
             _graphics = new GraphicsDeviceManager(this);
-            ScreenManager = new ScreenManager();
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
         }
 
         protected override void Initialize()
         {
-            ScreenManager.ChangeScreen(new GameScreen(this));
 
+            ScreenManager = new ScreenManager();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
-            AssetManager.LoadAll(Content);
+            AssetManager.LoadAll(Content, GraphicsDevice);
 
-            ScreenManager.ActiveScreen.LoadContent();
+            ScreenManager.ChangeScreen(new GameScreen(this));
         }
 
         protected override void Update(GameTime gameTime)
@@ -50,7 +49,7 @@ namespace Debugger.Application
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
 
-            ScreenManager.ActiveScreen.Draw();
+            ScreenManager.DrawAll(gameTime);
 
 
             base.Draw(gameTime);
