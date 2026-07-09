@@ -20,7 +20,7 @@ namespace Debugger.Application.Screens
         public abstract void Initialize();
         public abstract void LoadContent();
         public abstract void Update(GameTime gameTime);
-        public abstract void Draw();
+        public abstract void Draw(GameTime gameTime);
         
         public virtual void UnloadContent() { }
     }
