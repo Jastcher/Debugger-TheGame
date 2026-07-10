@@ -31,7 +31,7 @@ public class HudUI
         var _healthLabel = new Paragraph(Anchor.TopLeft, 1.0f, "HP: 100/100") { TextColor = Color.Red };
         hudContainer.AddChild(_healthLabel);
 
-        var minimap = new MinimapElement(Anchor.TopRight, new Vector2(200, 200), roomManager);
+        var minimap = new MinimapElement(Anchor.TopRight, new Vector2(100, 100), roomManager);
         hudContainer.AddChild(minimap);
     }
     
