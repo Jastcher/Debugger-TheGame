@@ -13,23 +13,33 @@ namespace Debugger.Core.Systems
 
         public int CurrentPosX { get; private set; }
         public int CurrentPosY { get; private set; }
-        
-        public int CenterX {get;private set;}
-        public int CenterY {get;private set;}
+
+        public int CenterX { get; private set; }
+        public int CenterY { get; private set; }
 
         public Room CurrentRoom { get => roomMap[CurrentPosX, CurrentPosY]; }
 
         public Room GetRoom(int x, int y) => roomMap[x, y];
 
-        Room[,] roomMap = new Room[9, 9];
+        Room[,] roomMap;
 
         public RoomManager()
         {
             CenterX = (Size - 1) / 2;
             CenterY = (Size - 1) / 2;
-            
+
+            roomMap = new Room[Size, Size];
+
+            Reset();
+        }
+
+        public void Reset()
+        {
             CurrentPosX = CenterX;
             CurrentPosY = CenterY;
+
+            // clear map
+            Array.Clear(roomMap, 0, roomMap.Length);
         }
 
         public void PlaceRoom(Room room)
@@ -43,8 +53,9 @@ namespace Debugger.Core.Systems
             int newPosX = CurrentPosX + relX;
             int newPosY = CurrentPosY + relY;
 
-            if (newPosX < 0 || newPosX > roomMap.GetLength(0)) return;
-            if (newPosY < 0 || newPosY > roomMap.GetLength(1)) return;
+            // um
+            if (newPosX < 0 || newPosX >= roomMap.GetLength(0)) return;
+            if (newPosY < 0 || newPosY >= roomMap.GetLength(1)) return;
 
             if (roomMap[newPosX, newPosY] == null) return;
 
@@ -145,6 +156,8 @@ namespace Debugger.Core.Systems
                 }
             }
 
+            // clears map and centers position
+            Reset();
 
             // add rooms to map
             foreach (Room room in rooms)
