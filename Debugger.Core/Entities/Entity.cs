@@ -1,5 +1,6 @@
 
 using System.Numerics;
+using Debugger.Core.Components;
 
 namespace Debugger.Core.Entities
 {
@@ -12,6 +13,8 @@ namespace Debugger.Core.Entities
         public float Health { get; set; } = 100.0f;
 
         public string TextureKey { get; protected set; } = "Empty";
+
+        public Hitbox? Hitbox {get;set;}
 
         public Entity(Vector2 startPosition)
         {
