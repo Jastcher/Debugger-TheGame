@@ -50,7 +50,7 @@ public class WorldManager
             for (int y = 0; y < collisions.GridSize.Y; y++)
             {
                 long intGridValue = collisions.GetValueAt(x, y);
-                if (intGridValue > 0)
+                if (intGridValue == 1)
                 {
                     coreGrid.SetSolid(x, y);
                 }
