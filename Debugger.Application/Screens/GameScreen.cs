@@ -14,17 +14,11 @@ namespace Debugger.Application.Screens
     public class GameScreen : Screen
     {
         EntityRenderer _renderer = new();
-        ExampleRenderer _tileRenderer;
-
         Camera _camera = new();
-
         GameplaySimulation _simulation = new();
-
-        RoomManager _roomManager = new();
-        
+        WorldManager _worldManager;
         HudUI _hud;
 
-        LDtkWorld world;
         public GameScreen(Debugger game) : base(game)
         {
         }
@@ -32,26 +26,19 @@ namespace Debugger.Application.Screens
         public override void Initialize()
         {
             // TODO: fix relative path
-            LDtkFile file = LDtkFile.FromFile("Content/world.ldtk");
-            world = file.LoadWorld(file.Worlds[0].Iid);
-            foreach (LDtkLevel room in world.Levels)
-            {
-                Console.WriteLine($"Found room named: {room.Identifier} at grid position X:{room.WorldX} Y:{room.WorldY}");
-            }
+            _worldManager = new(_spriteBatch);
+            _worldManager.Initialize("Content/world.ldtk");
 
-            _tileRenderer = new ExampleRenderer(_spriteBatch);
-
-            _roomManager.GenLayout(5);
+            _simulation.GenerateDungeonLayout(5);
+            // TODO: make this easier to read
+            _simulation.CurrentCollisionGrid = _worldManager.GetCollisionGridForRoom(_simulation.RoomManager.CurrentRoom.RoomIndex);
             
-            _hud = new(Game, AssetManager.DefaultUiStyle, _roomManager);
+            _hud = new(Game, AssetManager.DefaultUiStyle, _simulation.RoomManager);
         }
 
         public override void LoadContent()
         {
-            foreach (LDtkLevel level in world.Levels)
-            {
-                _tileRenderer.PrerenderLevel(level);
-            }
+            _worldManager.LoadContent();
         }
 
         public override void Draw(GameTime gameTime)
@@ -61,20 +48,12 @@ namespace Debugger.Application.Screens
                 transformMatrix: _camera.GetTransformationMatrix(Game.GraphicsDevice)
             );
 
-            _tileRenderer.RenderPrerenderedLevel(world.Levels[_roomManager.CurrentRoom.RoomIndex]);
+            _worldManager.RenderRoom(_simulation.RoomManager.CurrentRoom.RoomIndex);
 
             _renderer.Draw(_spriteBatch, _simulation.Entities);
 
-            // DEBUG
-            _spriteBatch.DrawString(
-                AssetManager.Font,
-                $"{_roomManager.CurrentPosX} {_roomManager.CurrentPosY}",
-                new Vector2(20, 20),
-                Color.White
-            );
-            
-
             _spriteBatch.End();
+
 
             _hud.Draw(_spriteBatch, gameTime);
         }
@@ -88,11 +67,11 @@ namespace Debugger.Application.Screens
             }
 
             // DEBUG
-            if (InputSystem.IsPressedOnce(Keys.Up)) _roomManager.Move(0, -1);
-            else if (InputSystem.IsPressedOnce(Keys.Down)) _roomManager.Move(0, 1);
-            if (InputSystem.IsPressedOnce(Keys.Left)) _roomManager.Move(-1, 0);
-            else if (InputSystem.IsPressedOnce(Keys.Right)) _roomManager.Move(1, 0);
-            if (InputSystem.IsPressedOnce(Keys.RightShift)) _roomManager.PrintMap();
+            if (InputSystem.IsPressedOnce(Keys.Up)) _simulation.RoomManager.Move(0, -1);
+            else if (InputSystem.IsPressedOnce(Keys.Down)) _simulation.RoomManager.Move(0, 1);
+            if (InputSystem.IsPressedOnce(Keys.Left)) _simulation.RoomManager.Move(-1, 0);
+            else if (InputSystem.IsPressedOnce(Keys.Right)) _simulation.RoomManager.Move(1, 0);
+            if (InputSystem.IsPressedOnce(Keys.RightShift)) _simulation.RoomManager.PrintMap();
 
 
             CoreVector2 movementInput = ProcessMovementInput();
@@ -101,9 +80,6 @@ namespace Debugger.Application.Screens
 
             _camera.Follow(_simulation.Player.Position, 1.0f, dt);
 
-            //Console.WriteLine($"player pos: {_simulation.Player.Position}");
-            //Console.WriteLine($"camera pos: {_camera.Position}");
-            
             _hud.Update(gameTime);
 
         }
