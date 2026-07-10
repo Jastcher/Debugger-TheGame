@@ -32,6 +32,7 @@ namespace Debugger.Application.Screens
             _simulation.GenerateDungeonLayout(5);
             // TODO: make this easier to read
             _simulation.CurrentCollisionGrid = _worldManager.GetCollisionGridForRoom(_simulation.RoomManager.CurrentRoom.RoomIndex);
+            _simulation.CurrentCollisionGrid.Print();
             
             _hud = new(Game, AssetManager.DefaultUiStyle, _simulation.RoomManager);
         }

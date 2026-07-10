@@ -12,20 +12,34 @@ public class CollisionGrid
     {
         _intGrid = new int[width, height];
     }
-    
+
     public void SetSolid(int x, int y)
     {
         if (x < 0 || x >= Width || y < 0 || y >= Height) return;
-        
-        _intGrid[x,y] = 1;
+
+        _intGrid[x, y] = 1;
     }
-    
+
     public bool IsSolid(int x, int y)
     {
-        
+
         if (x < 0 || x >= Width || y < 0 || y >= Height) return true;
-        
-        return _intGrid[x,y] == 1;
+
+        return _intGrid[x, y] == 1;
+    }
+
+    public void Print()
+    {
+        for (int i = 0; i < Width; i++)
+        {
+
+            for (int j = 0; j < Height; j++)
+            {
+
+                Console.Write($"{_intGrid[j,i]}");
+            }
+            Console.WriteLine();
+        }
     }
 
 }
