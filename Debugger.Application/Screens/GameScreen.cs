@@ -52,6 +52,8 @@ namespace Debugger.Application.Screens
             _worldManager.RenderRoom(_simulation.RoomManager.CurrentRoom.RoomIndex);
 
             _renderer.Draw(_spriteBatch, _simulation.Entities);
+            
+            _renderer.DrawHitbox(_spriteBatch, (Core.Components.CircleHitbox)_simulation.Player.Hitbox, _simulation.Player.Position);
 
             _spriteBatch.End();
 
