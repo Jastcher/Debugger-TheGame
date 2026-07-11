@@ -9,7 +9,7 @@ namespace Debugger.Core.Entities
         public Player(Vector2 startPosition) : base(startPosition)
         {
             Hitbox = new CircleHitbox(10.0f);
-            TextureKey = "player";
+            //TextureKey = "player";
             Width = 64;
             Height = 64;
         }
