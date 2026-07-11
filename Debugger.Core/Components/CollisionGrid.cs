@@ -5,12 +5,16 @@ public class CollisionGrid
     private readonly int[,] _intGrid;
 
 
-    private int Width => _intGrid.GetLength(0);
-    private int Height => _intGrid.GetLength(1);
+    public int Width => _intGrid.GetLength(0);
+    public int Height => _intGrid.GetLength(1);
+    
+    public int TileSize {get;set;}
 
-    public CollisionGrid(int width, int height)
+    public CollisionGrid(int width, int height, int tileSize)
     {
         _intGrid = new int[width, height];
+        
+        TileSize = tileSize;
     }
 
     public void SetSolid(int x, int y)

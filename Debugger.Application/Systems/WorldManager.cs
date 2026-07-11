@@ -43,7 +43,7 @@ public class WorldManager
 
         LDtkIntGrid collisions = level.GetIntGrid("Collisions");
 
-        var coreGrid = new CollisionGrid(collisions.GridSize.X, collisions.GridSize.Y);
+        var coreGrid = new CollisionGrid(collisions.GridSize.X, collisions.GridSize.Y, collisions.TileSize);
 
         for (int x = 0; x < collisions.GridSize.X; x++)
         {
