@@ -40,7 +40,9 @@ namespace Debugger.Core.Systems
                 Player.Position += pushback ;
             }
             
+            Player.HandleAnimationState(movementInput);
 
+            Player.Update(dt);
         }
     }
 }
