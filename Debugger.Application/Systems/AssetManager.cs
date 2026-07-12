@@ -18,7 +18,8 @@ namespace Debugger.Application.Systems
         public static UiStyle DefaultUiStyle { get; private set; }
         public static void LoadAll(ContentManager content, GraphicsDevice graphicsDevice)
         {
-            _textures["player"] = content.Load<Texture2D>("Sprites/arrow");
+            _textures["player_walk"] = content.Load<Texture2D>("walk");
+            _textures["player_idle"] = content.Load<Texture2D>("idle");
 
             Font = content.Load<SpriteFont>("Font");
 
