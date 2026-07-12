@@ -15,17 +15,53 @@ namespace Debugger.Application.Systems
         {
             foreach (var entity in entities)
             {
-                var texture = AssetManager.Get(entity.TextureKey);
-                if (texture != null)
-                {
-                    spriteBatch.Draw(texture, (Vector2)entity.Position, Color.White);
-                }
+                Draw(spriteBatch, entity);
             }
+        }
+
+        public void Draw(SpriteBatch spriteBatch, Entity entity)
+        {
+            string activeTextureKey = entity.TextureKey;
+            int activeFrameIndex = entity.StaticFrameIndex;
+
+            if (entity.Animator?.CurrentAnimation!= null)
+            {
+                activeTextureKey = entity.Animator.CurrentAnimation.TextureKey;
+                activeFrameIndex = entity.Animator.CurrentFrameIndex;
+            }
+
+            Texture2D texture = AssetManager.Get(activeTextureKey);
+            if (texture == null) return;
+
+            int tilesPerRow = texture.Width / entity.Width;
+
+            if (tilesPerRow == 0) tilesPerRow = 1;
+
+            int sourceX = (activeFrameIndex % tilesPerRow) * entity.Width;
+            int sourceY = (activeFrameIndex / tilesPerRow) * entity.Height;
+
+            Rectangle sourceRectangle = new Rectangle(sourceX, sourceY, entity.Width, entity.Height);
+
+            SpriteEffects flipEffect = (entity.Animator?.CurrentAnimation?.FlipHorizontal ?? false)
+                ? SpriteEffects.FlipHorizontally
+                : SpriteEffects.None;
+
+            spriteBatch.Draw(
+                    texture,
+                    entity.Position,
+                    sourceRectangle,
+                    Color.White,
+                    rotation: 0f,
+                    origin: entity.Origin,
+                    scale: entity.Scale,
+                    effects: flipEffect,
+                    layerDepth: 0f
+                );
         }
 
         public void DrawHitbox(SpriteBatch spriteBatch, CircleHitbox hitbox, Vector2 position)
         {
-            
+
             DrawCircleOutline(spriteBatch, AssetManager.WhitePixel, position + hitbox.Offset, hitbox.Radius, 16, Color.Red);
 
         }
