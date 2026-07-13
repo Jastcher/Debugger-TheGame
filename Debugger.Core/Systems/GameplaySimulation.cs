@@ -13,7 +13,7 @@ namespace Debugger.Core.Systems
         public RoomManager RoomManager { get; private set; } = new();
 
         public CollisionGrid? CurrentCollisionGrid { get; set; }
-        
+
         public GameplaySimulation()
         {
 
@@ -27,19 +27,26 @@ namespace Debugger.Core.Systems
         {
             RoomManager.GenLayout(size);
         }
+        
+        public void MoveRooms(Vector2 movementInput)
+        {
+            RoomManager.Move((int)movementInput.X, (int)movementInput.Y);
+        }
 
         public void Update(Vector2 movementInput, float dt)
         {
-            if (CurrentCollisionGrid == null) return;
 
             Player.Move(movementInput, dt);
 
-            Vector2 pushback;
-            if (CollisionSystem.CheckCircleVsGrid(Player.Position, Player.Hitbox as CircleHitbox, CurrentCollisionGrid, out pushback))
+            if (CurrentCollisionGrid != null)
             {
-                Player.Position += pushback ;
+                Vector2 pushback;
+                if (CollisionSystem.CheckCircleVsGrid(Player.Position, Player.Hitbox as CircleHitbox, CurrentCollisionGrid, out pushback))
+                {
+                    Player.Position += pushback;
+                }
             }
-            
+
             Player.HandleAnimationState(movementInput);
 
             Player.Update(dt);
