@@ -25,15 +25,16 @@ namespace Debugger.Application.Screens
 
         public override void Initialize()
         {
-            // TODO: fix relative path
             _worldManager = new(_spriteBatch);
             _worldManager.Initialize("Content/world.ldtk");
 
+            _simulation.RoomManager.OnRoomChanged += (newRoomIndex) =>
+            {
+                _simulation.CurrentCollisionGrid = _worldManager.GetCollisionGridForRoom(newRoomIndex);
+            };
+
             _simulation.GenerateDungeonLayout(5);
-            // TODO: make this easier to read
-            _simulation.CurrentCollisionGrid = _worldManager.GetCollisionGridForRoom(_simulation.RoomManager.CurrentRoom.RoomIndex);
-            _simulation.CurrentCollisionGrid.Print();
-            
+
             _hud = new(Game, AssetManager.DefaultUiStyle, _simulation.RoomManager);
         }
 
@@ -52,7 +53,7 @@ namespace Debugger.Application.Screens
             _worldManager.RenderRoom(_simulation.RoomManager.CurrentRoom.RoomIndex);
 
             _renderer.Draw(_spriteBatch, _simulation.Entities);
-            
+
             _renderer.DrawHitbox(_spriteBatch, (Core.Components.CircleHitbox)_simulation.Player.Hitbox, _simulation.Player.Position);
 
             _spriteBatch.End();
@@ -70,10 +71,10 @@ namespace Debugger.Application.Screens
             }
 
             // DEBUG
-            if (InputSystem.IsPressedOnce(Keys.Up)) _simulation.RoomManager.Move(0, -1);
-            else if (InputSystem.IsPressedOnce(Keys.Down)) _simulation.RoomManager.Move(0, 1);
-            if (InputSystem.IsPressedOnce(Keys.Left)) _simulation.RoomManager.Move(-1, 0);
-            else if (InputSystem.IsPressedOnce(Keys.Right)) _simulation.RoomManager.Move(1, 0);
+            if (InputSystem.IsPressedOnce(Keys.Up)) _simulation.MoveRooms(new(0, -1));
+            else if (InputSystem.IsPressedOnce(Keys.Down)) _simulation.MoveRooms(new(0, 1));
+            if (InputSystem.IsPressedOnce(Keys.Left)) _simulation.MoveRooms(new(-1, 0));
+            else if (InputSystem.IsPressedOnce(Keys.Right)) _simulation.MoveRooms(new(1, 0));
             if (InputSystem.IsPressedOnce(Keys.RightShift)) _simulation.RoomManager.PrintMap();
 
 

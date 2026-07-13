@@ -7,6 +7,7 @@ namespace Debugger.Core.Systems
 {
     public class RoomManager
     {
+        public event Action<int>? OnRoomChanged;
 
         // size has to be odd
         public int Size { get; private set; } = 9;
@@ -38,6 +39,7 @@ namespace Debugger.Core.Systems
             CurrentPosX = CenterX;
             CurrentPosY = CenterY;
 
+
             // clear map
             Array.Clear(roomMap, 0, roomMap.Length);
         }
@@ -53,7 +55,6 @@ namespace Debugger.Core.Systems
             int newPosX = CurrentPosX + relX;
             int newPosY = CurrentPosY + relY;
 
-            // um
             if (newPosX < 0 || newPosX >= roomMap.GetLength(0)) return;
             if (newPosY < 0 || newPosY >= roomMap.GetLength(1)) return;
 
@@ -61,6 +62,8 @@ namespace Debugger.Core.Systems
 
             CurrentPosX = newPosX;
             CurrentPosY = newPosY;
+
+            OnRoomChanged?.Invoke(CurrentRoom.RoomIndex);
 
         }
 
@@ -87,6 +90,8 @@ namespace Debugger.Core.Systems
 
         public void GenLayout(int size)
         {
+
+
             int IDCounter = 0;
             List<Room> rooms = new();
 
@@ -156,13 +161,18 @@ namespace Debugger.Core.Systems
                 }
             }
 
-            // clears map and centers position
+
             Reset();
 
             // add rooms to map
             foreach (Room room in rooms)
             {
                 PlaceRoom(room);
+            }
+
+            if (CurrentRoom != null)
+            {
+                OnRoomChanged?.Invoke(CurrentRoom.RoomIndex);
             }
 
         }
