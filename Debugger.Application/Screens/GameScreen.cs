@@ -71,16 +71,17 @@ namespace Debugger.Application.Screens
             }
 
             // DEBUG
-            if (InputSystem.IsPressedOnce(Keys.Up)) _simulation.MoveRooms(new(0, -1));
-            else if (InputSystem.IsPressedOnce(Keys.Down)) _simulation.MoveRooms(new(0, 1));
-            if (InputSystem.IsPressedOnce(Keys.Left)) _simulation.MoveRooms(new(-1, 0));
-            else if (InputSystem.IsPressedOnce(Keys.Right)) _simulation.MoveRooms(new(1, 0));
+            if (InputSystem.IsPressedOnce(Keys.NumPad8)) _simulation.MoveRooms(new(0, -1));
+            else if (InputSystem.IsPressedOnce(Keys.NumPad2)) _simulation.MoveRooms(new(0, 1));
+            if (InputSystem.IsPressedOnce(Keys.NumPad4)) _simulation.MoveRooms(new(-1, 0));
+            else if (InputSystem.IsPressedOnce(Keys.NumPad6)) _simulation.MoveRooms(new(1, 0));
             if (InputSystem.IsPressedOnce(Keys.RightShift)) _simulation.RoomManager.PrintMap();
 
 
             CoreVector2 movementInput = ProcessMovementInput();
+            CoreVector2 facingInput = ProcessFacingInput();
 
-            _simulation.Update(movementInput, dt);
+            _simulation.Update(movementInput, facingInput, dt);
 
             _camera.Follow(_simulation.Player.Position, 1.0f, dt);
 
@@ -98,6 +99,17 @@ namespace Debugger.Application.Screens
             if (state.IsKeyDown(Keys.A)) direction.X -= 1f;
             else if (state.IsKeyDown(Keys.D)) direction.X += 1f;
 
+            return direction;
+        }
+        private CoreVector2 ProcessFacingInput()
+        {
+            var state = Keyboard.GetState();
+            var direction = CoreVector2.Zero;
+
+            if (state.IsKeyDown(Keys.Up)) direction.Y -= 1f;
+            else if (state.IsKeyDown(Keys.Down)) direction.Y += 1f;
+            if (state.IsKeyDown(Keys.Left)) direction.X -= 1f;
+            else if (state.IsKeyDown(Keys.Right)) direction.X += 1f;
 
             return direction;
         }

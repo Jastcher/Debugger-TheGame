@@ -9,6 +9,7 @@ namespace Debugger.Core.Entities
     public class Player : Entity
     {
         public Direction Facing { get; private set; } = Direction.Down;
+        
         public Player(Vector2 startPosition) : base(startPosition)
         {
             Hitbox = new CircleHitbox(10.0f, new(0,20.0f));

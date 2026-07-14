@@ -33,7 +33,7 @@ namespace Debugger.Core.Systems
             RoomManager.Move((int)movementInput.X, (int)movementInput.Y);
         }
 
-        public void Update(Vector2 movementInput, float dt)
+        public void Update(Vector2 movementInput, Vector2 facingInput, float dt)
         {
 
             Player.Move(movementInput, dt);
@@ -47,7 +47,10 @@ namespace Debugger.Core.Systems
                 }
             }
 
-            Player.HandleAnimationState(movementInput);
+            if (facingInput == Vector2.Zero)
+                Player.HandleAnimationState(movementInput);
+            else
+                Player.HandleAnimationState(facingInput);
 
             Player.Update(dt);
         }
