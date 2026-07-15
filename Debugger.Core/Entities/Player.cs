@@ -10,13 +10,16 @@ namespace Debugger.Core.Entities
     {
         public Direction Facing { get; private set; } = Direction.Down;
         
-        public Player(Vector2 startPosition) : base(startPosition)
+        public Player()
         {
-            Hitbox = new CircleHitbox(10.0f, new(0,20.0f));
+            // fix magic numbers
+            Hitbox = new CircleHitbox(10.0f, new(64,64 + 20));
             TextureKey = "player_walk";
             Width = 32;
             Height = 32;
             Scale = 4.0f;
+            
+            Position = new(50,50);
 
             Animator = new();
             Animator.AddAnimation(new("walk_down", "player_walk", 0, 4, 0.1f, true));
