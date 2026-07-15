@@ -7,8 +7,8 @@ namespace Debugger.Core.Entities
 {
     public abstract class Entity
     {
-        public Vector2 Position { get; set; }
-        public float Scale {get;set;} = 0.0f;
+        public Vector2 Position { get; set; } = Vector2.Zero;
+        public float Scale {get;set;} = 1.0f;
         public int Width { get; set; } = 32;
         public int Height { get; set; } = 32;
         
@@ -23,10 +23,9 @@ namespace Debugger.Core.Entities
         public AnimationController? Animator {get;set;} 
         public int StaticFrameIndex {get;set;} = 0;
 
-        public Entity(Vector2 startPosition)
+        public Entity()
         {
-            Position = startPosition;
-            Origin = new Vector2(Width/2, Height/2);
+            //Origin = new Vector2(Width/2, Height/2);
         }
 
         virtual public void Move(Vector2 direction, float dt)
