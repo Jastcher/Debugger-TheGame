@@ -1,4 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Debugger.Core.Components;
+using Debugger.Core.Entities;
 using LDtk;
 using LDtk.Renderer;
 using Microsoft.Xna.Framework.Graphics;
@@ -60,4 +64,36 @@ public class WorldManager
         return coreGrid;
     }
 
+    public List<Entity> GetEntitiesForRoom(int roomIndex)
+    {
+        LDtkLevel level = _world.Levels[roomIndex];
+        List<Entity> entities = new();
+
+        var entityLayer = level.LayerInstances?.FirstOrDefault(l => l._Type == LayerType.Entities);
+
+        if (entityLayer == null) return entities;
+
+        foreach (EntityInstance instance in entityLayer.EntityInstances)
+        {
+            string identifier = instance._Identifier;
+            CoreVector2 position = new CoreVector2(instance.Px.X, instance.Px.Y);
+            Console.WriteLine($"{position.X} {position.Y}");
+
+            switch (identifier)
+            {
+                case "Barrel":
+                    Barrel b = new()
+                    {
+                        Position = position
+                    };
+                    entities.Add(b);
+                    break;
+
+            }
+        }
+
+        Console.WriteLine($"Spawned {entities.Count} total entities for room {roomIndex}");
+
+        return entities;
+    }
 }
