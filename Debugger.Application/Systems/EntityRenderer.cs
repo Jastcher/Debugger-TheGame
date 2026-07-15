@@ -13,6 +13,8 @@ namespace Debugger.Application.Systems
 
         public void Draw(SpriteBatch spriteBatch, IEnumerable<Entity> entities)
         {
+            if (entities == null) return;
+
             foreach (var entity in entities)
             {
                 Draw(spriteBatch, entity);
@@ -24,7 +26,7 @@ namespace Debugger.Application.Systems
             string activeTextureKey = entity.TextureKey;
             int activeFrameIndex = entity.StaticFrameIndex;
 
-            if (entity.Animator?.CurrentAnimation!= null)
+            if (entity.Animator?.CurrentAnimation != null)
             {
                 activeTextureKey = entity.Animator.CurrentAnimation.TextureKey;
                 activeFrameIndex = entity.Animator.CurrentFrameIndex;
@@ -46,6 +48,7 @@ namespace Debugger.Application.Systems
                 ? SpriteEffects.FlipHorizontally
                 : SpriteEffects.None;
 
+            //Console.WriteLine($"Drawing {entity}, sourceX {sourceX}, sourceY {sourceY}, {entity.Width}/{entity.Height}");
             spriteBatch.Draw(
                     texture,
                     entity.Position,
