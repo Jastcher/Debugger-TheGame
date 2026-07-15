@@ -1,10 +1,45 @@
 using System.Numerics;
+using System.Runtime.Intrinsics.X86;
 using Debugger.Core.Components;
 
 namespace Debugger.Core.Systems;
 
 public static class CollisionSystem
 {
+    public static bool CheckCircleVsCircle(Vector2 entity1Pos, CircleHitbox? hitbox1, Vector2 entity2Pos, CircleHitbox? hitbox2, out Vector2 pushBack)
+    {
+        pushBack = Vector2.Zero;
+
+        if (hitbox1 == null || hitbox2 == null) return false;
+
+        Vector2 entity1center = entity1Pos + hitbox1.Offset;
+        Vector2 entity2center = entity2Pos + hitbox2.Offset;
+
+        var distX = entity1center.X - entity2center.X;
+        var distY = entity1center.Y - entity2center.Y;
+
+        float distanceSquared = (distX * distX) + (distY * distY);
+
+        float R = hitbox1.Radius + hitbox2.Radius;
+
+        if (distanceSquared < (R * R))
+        {
+
+            float distance = (float)Math.Sqrt(distanceSquared);
+
+            // fallback if distance is 0
+            Vector2 normal = (distance > 0)
+                ? new Vector2(distX / distance, distY / distance)
+                : new Vector2(0, -1);
+
+            float overlapDepth = R - distance;
+            
+            pushBack = normal * overlapDepth;
+            
+            return true;
+        }
+        return false;
+    }
     public static bool CheckCircleVsGrid(Vector2 entityPos, CircleHitbox? hitbox, CollisionGrid grid, out Vector2 pushBack)
     {
 
