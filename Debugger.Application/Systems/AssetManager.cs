@@ -20,6 +20,8 @@ namespace Debugger.Application.Systems
         {
             _textures["player_walk"] = content.Load<Texture2D>("walk");
             _textures["player_idle"] = content.Load<Texture2D>("idle");
+            
+            _textures["tileSheet"] = content.Load<Texture2D>("tilesheet");
 
             Font = content.Load<SpriteFont>("Font");
 
