@@ -1,6 +1,8 @@
 using System.Numerics;
+using System.Runtime.InteropServices;
 using Debugger.Core.Components;
 using Debugger.Core.Entities;
+using Microsoft.VisualBasic;
 
 namespace Debugger.Core.Systems
 {
@@ -8,19 +10,17 @@ namespace Debugger.Core.Systems
     {
         public Player Player { get; set; }
 
-        public List<Entity> Entities { get; set; }
 
         public RoomManager RoomManager { get; private set; } = new();
 
+        public List<Entity>? CurrentEntities { get; set; }
         public CollisionGrid? CurrentCollisionGrid { get; set; }
 
         public GameplaySimulation()
         {
 
-            Player = new(new Vector2(50, 50));
+            Player = new();
 
-            Entities = new();
-            Entities.Add(Player);
         }
 
         public void GenerateDungeonLayout(int size)
@@ -45,6 +45,22 @@ namespace Debugger.Core.Systems
                 {
                     Player.Position += pushback;
                 }
+            }
+            
+            if (CurrentEntities != null)
+            foreach (var entity in CurrentEntities)
+            {
+                
+                if (entity.Hitbox == null) continue;
+                
+                Vector2 pushback;
+                if (CollisionSystem.CheckCircleVsCircle(Player.Position, Player.Hitbox as CircleHitbox,entity.Position, entity.Hitbox as CircleHitbox,  out pushback))
+                {
+                    
+                    Player.Position += pushback;
+                    Console.WriteLine("COLLIDED");
+                }
+
             }
 
             if (facingInput == Vector2.Zero)
