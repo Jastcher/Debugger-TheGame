@@ -31,7 +31,7 @@ namespace Debugger.Core.Systems
         {
             RoomManager.GenLayout(size);
         }
-        
+
         public void MoveRooms(Vector2 movementInput)
         {
             RoomManager.Move((int)movementInput.X, (int)movementInput.Y);
@@ -50,27 +50,28 @@ namespace Debugger.Core.Systems
                     Player.Position += pushback;
                 }
             }
-            
+
             if (CurrentEntities != null)
-            foreach (var entity in CurrentEntities)
-            {
-                
-                if (entity.Hitbox == null) continue;
-                
-                Vector2 pushback;
-                if (CollisionSystem.CheckCircleVsCircle(Player.Position, Player.Hitbox as CircleHitbox,entity.Position, entity.Hitbox as CircleHitbox,  out pushback))
+                for (int i = CurrentEntities.Count - 1; i >= 0; i--)
                 {
-                    
-                    Player.Position += pushback;
-                    Console.WriteLine("COLLIDED");
+                    var entity = CurrentEntities[i];
+
+                    if (entity.Hitbox == null) continue;
+
+                    Vector2 pushback;
+                    if (CollisionSystem.CheckCircleVsCircle(Player.Position, Player.Hitbox as CircleHitbox, entity.Position, entity.Hitbox as CircleHitbox, out pushback))
+                    {
+
+                        Player.Position += pushback;
+
+                        //CurrentEntities.RemoveAt(i);
+                        Console.WriteLine("COLLIDED");
+                    }
+
                 }
 
-            }
-
-            if (facingInput == Vector2.Zero)
-                Player.HandleAnimationState(movementInput);
-            else
-                Player.HandleAnimationState(facingInput);
+            Player.MovementVector = movementInput;
+            Player.FacingVector = facingInput;
 
             Player.Update(dt);
         }
