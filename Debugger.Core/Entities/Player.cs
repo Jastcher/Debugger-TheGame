@@ -4,22 +4,26 @@ using Debugger.Core.Components;
 
 namespace Debugger.Core.Entities
 {
-    public enum Direction { Up, Down, Left, Right }
 
     public class Player : Entity
     {
-        public Direction Facing { get; private set; } = Direction.Down;
-        
+        public Vector2 MovementVector { get; set; }
+        // direction of shooting
+        public Vector2 FacingVector { get; set; }
+        // direction for animations
+        public Vector2 FacingDirection { get; set; }
+
+        private string? _lastDirection;
         public Player()
         {
             // fix magic numbers
-            Hitbox = new CircleHitbox(10.0f, new(64,64 + 20));
+            Hitbox = new CircleHitbox(10.0f, new(64, 64 + 20));
             TextureKey = "player_walk";
             Width = 32;
             Height = 32;
             Scale = 4.0f;
-            
-            Position = new(50,50);
+
+            Position = new(50, 50);
 
             Animator = new();
             Animator.AddAnimation(new("walk_down", "player_walk", 0, 4, 0.1f, true));
@@ -31,39 +35,37 @@ namespace Debugger.Core.Entities
             Animator.AddAnimation(new("idle_right", "player_idle", 2, 2, 0.5f, true));
             Animator.AddAnimation(new("idle_left", "player_idle", 2, 2, 0.5f, true, flipHorizontal: true));
             Animator.AddAnimation(new("idle_up", "player_idle", 4, 2, 0.5f, true));
-            
+
             Animator.Play("idle_down");
-            
+
         }
-        
-        public void HandleAnimationState(Vector2 movementInput)
+
+
+        public override void Update(float dt)
+        {
+
+            base.Update(dt);
+
+            HandleAnimationState();
+        }
+
+        public void HandleAnimationState()
         {
             if (Animator == null) return;
 
-            bool isMoving = movementInput != Vector2.Zero;
-
-            if (isMoving)
+            bool isMoving = MovementVector != Vector2.Zero;
+            
+            if (FacingVector != Vector2.Zero || isMoving)
             {
-                if (Math.Abs(movementInput.X) >= Math.Abs(movementInput.Y))
-                {
-                    Facing = (movementInput.X > 0) ? Direction.Right : Direction.Left;
-                }
-                else
-                {
-                    Facing = (movementInput.Y > 0) ? Direction.Down : Direction.Up;
-                }
+                Vector2 targetVector = FacingVector != Vector2.Zero ? FacingVector : MovementVector;
+
+                _lastDirection = Math.Abs(targetVector.X) >= Math.Abs(targetVector.Y)
+                    ? (targetVector.X > 0 ? "right" : "left")
+                    : (targetVector.Y > 0 ? "down" : "up");
             }
 
-            string animationToPlay = Facing switch
-            {
-                Direction.Up    => isMoving ? "walk_up"    : "idle_up",
-                Direction.Down  => isMoving ? "walk_down"  : "idle_down",
-                Direction.Left  => isMoving ? "walk_left"  : "idle_left",
-                Direction.Right => isMoving ? "walk_right" : "idle_right",
-                _ => "idle_down"
-            };
-
-            Animator.Play(animationToPlay);
+            string action = isMoving ? "walk" : "idle";
+            Animator.Play($"{action}_{_lastDirection}");
         }
     }
 }
