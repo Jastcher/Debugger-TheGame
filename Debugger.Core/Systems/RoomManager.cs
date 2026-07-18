@@ -186,7 +186,7 @@ namespace Debugger.Core.Systems
         public int X { get; set; }
         public int Y { get; set; }
 
-        public List<Entity> Entities { get; private set; } = new();
+        public List<Entity>? Entities { get; set; }
 
         public Room(int id, int roomIndex, int x, int y)
         {

@@ -13,7 +13,11 @@ namespace Debugger.Core.Systems
 
         public RoomManager RoomManager { get; private set; } = new();
 
-        public List<Entity>? CurrentEntities { get; set; }
+        public List<Entity>? CurrentEntities
+        {
+            get => RoomManager.CurrentRoom.Entities;
+            set => RoomManager.CurrentRoom.Entities = value;
+        }
         public CollisionGrid? CurrentCollisionGrid { get; set; }
 
         public GameplaySimulation()
