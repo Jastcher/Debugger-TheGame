@@ -30,7 +30,7 @@ namespace Debugger.Application.Screens
             _simulation.RoomManager.OnRoomChanged += (newRoomIndex) =>
             {
                 _simulation.CurrentCollisionGrid = _worldManager.GetCollisionGridForRoom(newRoomIndex);
-                _simulation.CurrentEntities = _worldManager.GetEntitiesForRoom(newRoomIndex);
+                _simulation.CurrentEntities ??= _worldManager.GetEntitiesForRoom(newRoomIndex);
             };
 
             _simulation.GenerateDungeonLayout(5);
@@ -57,11 +57,11 @@ namespace Debugger.Application.Screens
             _renderer.Draw(_spriteBatch, _simulation.CurrentEntities);
 
             _renderer.DrawHitbox(_spriteBatch, (Core.Components.CircleHitbox)_simulation.Player.Hitbox, _simulation.Player.Position);
-            
+
             foreach (var entity in _simulation.CurrentEntities)
             {
-                
-            if (entity.Hitbox == null) continue;
+
+                if (entity.Hitbox == null) continue;
                 _renderer.DrawHitbox(_spriteBatch, (Core.Components.CircleHitbox)entity.Hitbox, entity.Position);
             }
 
